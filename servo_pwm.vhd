@@ -12,19 +12,19 @@ entity servo_pwm is
 end servo_pwm;
 
 architecture Behavioral of servo_pwm is
-    -- Counter,  from 0 to 359
-    signal cnt : unsigned(8 downto 0);
+    -- Counter, from 0 to 1279.
+    signal cnt : unsigned(10 downto 0);
     -- Temporal signal used to generate the PWM pulse.
     signal pwmi: unsigned(7 downto 0);
 begin
     -- Minimum value should be 0.5ms.
     pwmi <= unsigned('0' & pos) + 32;
-    -- Counter process, from 0 to 359
+    -- Counter process, from 0 to 1279.
     counter: process (reset, clk) begin
         if (reset = '1') then
             cnt <= (others => '0');
         elsif rising_edge(clk) then
-            if (cnt = 359) then
+            if (cnt = 1279) then
                 cnt <= (others => '0');
             else
                 cnt <= cnt + 1;
