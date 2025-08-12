@@ -60,7 +60,8 @@ Reference on servo PWM timing: `Servomotor Control with PWM and VHDL` on CodePro
 - `leds(3:2)`: slow heartbeat / activity
 
 
+## Opensource Projects Used:
 
-
-
+ - [pid-fpga-vhdl](https://github.com/deepc94/pid-fpga-vhdl/tree/master)
+ - [HC_SR04_interface_VHDL](https://github.com/S81f/HC_SR04_interface_VHDL)
 
