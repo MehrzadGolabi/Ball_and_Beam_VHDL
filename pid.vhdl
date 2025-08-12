@@ -24,9 +24,16 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity pid is
-    Port ( ADC_DATA : in  STD_LOGIC_VECTOR (15 downto 0); --16 bit unsigned PID input
-           DAC_DATA : out  STD_LOGIC_VECTOR (15 downto 0); --16 bit unsigned PID output 
-           CLK1 : in STD_LOGIC);
+    Port (
+           ADC_DATA   : in  STD_LOGIC_VECTOR (15 downto 0); --16 bit unsigned PID input
+           DAC_DATA   : out STD_LOGIC_VECTOR (15 downto 0); --16 bit unsigned PID output 
+           CLK1       : in  STD_LOGIC;
+           -- Runtime-configurable parameters (unsigned 16-bit)
+           Kp_in      : in  STD_LOGIC_VECTOR (15 downto 0);
+           Ki_in      : in  STD_LOGIC_VECTOR (15 downto 0);
+           Kd_in      : in  STD_LOGIC_VECTOR (15 downto 0);
+           SetVal_in  : in  STD_LOGIC_VECTOR (15 downto 0)
+    );
 end pid;
 architecture Behavioral of pid is
     type statetypes is (Reset,		--user defined type to determine the flow of the system
@@ -38,13 +45,13 @@ architecture Behavioral of pid is
 			ConvDac);	                             
     
     signal state,next_state : statetypes := Reset;     
-    signal Kp : integer := 10;        -- proportional constant
-    signal Kd : integer := 20;        -- differential constant
-    signal Ki : integer := 1;         -- integral constant
+    signal Kp : integer := 10;        -- proportional constant (default)
+    signal Kd : integer := 20;        -- differential constant (default)
+    signal Ki : integer := 1;         -- integral constant (default)
     signal Output : integer := 1;	--intermediate output
     signal inter: integer := 0;		--intermediate signal
     -- Fixed hard-coded setpoint (in centimeters). Adjust as needed.
-    signal SetVal : integer := 33;   	-- desired setpoint (cm)
+    signal SetVal : integer := 33;   	-- desired setpoint (cm) default
     signal sAdc : integer := 0 ;	--stores the integer converted value of the ADC input
     signal Error: integer := 0;		--Stores the deviation of the input from the set point
     signal p,i,d : integer := 0;	--Contain the proportional, derivative and integral errors respectively
@@ -57,6 +64,11 @@ PROCESS(CLK1,state)		--sensitive to Clock and current state
      BEGIN	 
          IF CLK1'EVENT AND CLK1='1' THEN  
 				state <= next_state;
+            -- Latch runtime-configurable parameters each cycle
+            Kp     <= to_integer(unsigned(Kp_in));
+            Ki     <= to_integer(unsigned(Ki_in));
+            Kd     <= to_integer(unsigned(Kd_in));
+            SetVal <= to_integer(unsigned(SetVal_in));
          END IF;
          case state is
 		 when Reset =>

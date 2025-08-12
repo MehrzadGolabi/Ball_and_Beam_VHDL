@@ -3,9 +3,9 @@
 This design implements a Ball-and-Beam control loop on an Spartan-6 FPGA using:
 
 - HC-SR04 ultrasonic sensor interface (trigger + echo-time + distance in cm)
-- Discrete PID controller with a fixed, hard-coded setpoint
+- Discrete PID controller with a fixed, hard-coded setpoint (can be updated at runtime via UART)
 - Servo PWM for MG996 @ 50 Hz with 1.0 ms to 2.5 ms pulse width
-- UART telemetry (115200) to monitor distance and servo position
+- UART telemetry (115200) to monitor distance and servo position, and to tune PID at runtime
 - LEDs for simple status
 
 ### Top Module
@@ -30,9 +30,7 @@ References for HC-SR04 math: `distance_cm = pulse_width_us / 58`.
 ### PID Controller
 
 - File: `pid.vhdl`. Uses 16-bit unsigned input and output.
-- Hard-coded setpoint `SetVal` was changed to 33 (cm) in this design. 
-- Mapping from sensor distance to PID input in `top_ball_beam` scales the centimeter reading by 1000 to better utilize the 16-bit resolution.
-- PID gains (`Kp`, `Ki`, `Kd`)
+- Default setpoint is 33 (cm). PID gains default: Kp=10, Ki=1, Kd=20. All can be changed live via UART.
 
 ### Servo PWM (MG996)
 
@@ -45,13 +43,46 @@ References for HC-SR04 math: `distance_cm = pulse_width_us / 58`.
 
 Reference on servo PWM timing: `Servomotor Control with PWM and VHDL` on CodeProject (`https://www.codeproject.com/Articles/513169/Servomotor-Control-with-PWM-and-VHDL`).
 
-### UART Telemetry
+### UART
 
-- UART module integrated at 115200 buadrate by setting divisor ≈ `Fclk/baud`.
+- Baud: 115200 bps (divisor ≈ `Fclk/baud`, for 24 MHz use 208)
   - For 24 MHz, divisor = 24_000_000 / 115200 ≈ 208.33 → use 208.
-- Telemetry format per measurement: `D=hhh S=ppp\r\n`
+- Telemetry per measurement: `D=hhh S=ppp\r\n`
   - `D` is distance in cm (3 digits)
   - `S` is servo position 0..127 (3 digits)
+
+#### Runtime Tuning Protocol (HEX framing)
+
+All command bytes are raw 8-bit values. Two command types are supported:
+
+- Set PID gains (Kp, Ki, Kd)
+  - Frame (8 bytes total):
+    - `0`: 0x50 ('P')
+    - `1`: Kp_hi
+    - `2`: Kp_lo
+    - `3`: Ki_hi
+    - `4`: Ki_lo
+    - `5`: Kd_hi
+    - `6`: Kd_lo
+    - `7`: 0x0A (LF)
+  - Example (Kp=10, Ki=1, Kd=20): `50 00 0A 00 01 00 14 0A`
+
+- Set Setpoint (centimeters, unsigned 16-bit)
+  - Frame (8 bytes total):
+    - `0`: 0x53 ('S')
+    - `1`: SP_hi
+    - `2`: SP_lo
+    - `3`: 0x00 (reserved)
+    - `4`: 0x00 (reserved)
+    - `5`: 0x00 (reserved)
+    - `6`: 0x00 (reserved)
+    - `7`: 0x0A (LF)
+  - Example (Setpoint=33): `53 00 21 00 00 00 00 0A`
+
+Notes:
+- Values are big-endian within each 16-bit field.
+- Controller latches new parameters on receipt of the LF byte.
+- RX protocol is tolerant to gaps between bytes (buffered one-byte-at-a-time).
 
 ### LEDs
 

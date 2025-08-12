@@ -88,7 +88,11 @@ architecture rtl of top_ball_beam is
     port (
       ADC_DATA : in  std_logic_vector(15 downto 0);
       DAC_DATA : out std_logic_vector(15 downto 0);
-      CLK1     : in  std_logic
+      CLK1     : in  std_logic;
+      Kp_in    : in  std_logic_vector(15 downto 0);
+      Ki_in    : in  std_logic_vector(15 downto 0);
+      Kd_in    : in  std_logic_vector(15 downto 0);
+      SetVal_in: in  std_logic_vector(15 downto 0)
     );
   end component;
 
@@ -130,6 +134,10 @@ architecture rtl of top_ball_beam is
   -- PID wiring
   signal adc_data     : std_logic_vector(15 downto 0);
   signal dac_data     : std_logic_vector(15 downto 0);
+  signal kp_cfg       : std_logic_vector(15 downto 0) := x"000A"; -- 10 default
+  signal ki_cfg       : std_logic_vector(15 downto 0) := x"0001"; -- 1 default
+  signal kd_cfg       : std_logic_vector(15 downto 0) := x"0014"; -- 20 default
+  signal sp_cfg       : std_logic_vector(15 downto 0) := x"0021"; -- 33 cm default
 
   -- Servo position (0..127)
   signal servo_pos    : std_logic_vector(6 downto 0);
@@ -243,7 +251,11 @@ begin
     port map (
       ADC_DATA => adc_data,
       DAC_DATA => dac_data,
-      CLK1     => clk
+      CLK1     => clk,
+      Kp_in    => kp_cfg,
+      Ki_in    => ki_cfg,
+      Kd_in    => kd_cfg,
+      SetVal_in=> sp_cfg
     );
 
   -- Map PID output (16-bit) to servo_pos (7-bit). Simple linear map with inversion for direction if needed.
@@ -344,11 +356,21 @@ begin
     -- simple helper to split pos into 3 decimal digits (0..127)
     variable pos_val  : integer;
     variable p_h, p_t, p_o : integer;
+    -- UART RX command decoder (HEX protocol)
+    -- Protocol (8 bytes per command):
+    --  'P' Kp_hi Kp_lo Ki_hi Ki_lo Kd_hi Kd_lo '\n'     -> set Kp,Ki,Kd
+    --  'S' SP_hi SP_lo 00    00    00    00    '\n'     -> set Setpoint (cm)
+    -- All values unsigned bytes (big-endian per field)
+    type rx_state_t is (RX_IDLE, RX_CMD, RX_B1, RX_B2, RX_B3, RX_B4, RX_B5, RX_B6, RX_LF);
+    variable rx_state : rx_state_t := RX_IDLE;
+    variable cmd      : std_logic_vector(7 downto 0);
+    variable b1,b2,b3,b4,b5,b6 : std_logic_vector(7 downto 0);
   begin
     if reset = '1' then
       tx_state <= TX_IDLE;
       wr <= '0';
       txdata <= (others => '0');
+      rx_state := RX_IDLE;
     elsif rising_edge(clk) then
       wr <= '0';
 
@@ -460,6 +482,42 @@ begin
           -- default recovery
           tx_state <= TX_IDLE;
       end case;
+
+      -- UART RX: simple byte-wide pull
+      if rx_avail = '1' then
+        -- read one byte
+        rd <= '1';
+        if rx_state = RX_IDLE then
+          cmd := rxdata;
+          rx_state := RX_CMD;
+        elsif rx_state = RX_CMD then
+          b1 := rxdata; rx_state := RX_B1;
+        elsif rx_state = RX_B1 then
+          b2 := rxdata; rx_state := RX_B2;
+        elsif rx_state = RX_B2 then
+          b3 := rxdata; rx_state := RX_B3;
+        elsif rx_state = RX_B3 then
+          b4 := rxdata; rx_state := RX_B4;
+        elsif rx_state = RX_B4 then
+          b5 := rxdata; rx_state := RX_B5;
+        elsif rx_state = RX_B5 then
+          b6 := rxdata; rx_state := RX_B6;
+        elsif rx_state = RX_B6 then
+          -- expect LF and then apply
+          if rxdata = x"0A" then
+            if cmd = x"50" then -- 'P'
+              kp_cfg <= b1 & b2;
+              ki_cfg <= b3 & b4;
+              kd_cfg <= b5 & b6;
+            elsif cmd = x"53" then -- 'S'
+              sp_cfg <= b1 & b2;
+            end if;
+          end if;
+          rx_state := RX_IDLE;
+        end if;
+      else
+        rd <= '0';
+      end if;
     end if;
   end process;
 
