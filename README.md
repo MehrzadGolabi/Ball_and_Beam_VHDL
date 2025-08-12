@@ -43,7 +43,7 @@ References for HC-SR04 math: `distance_cm = pulse_width_us / 58`.
   - `ticks_2_5ms = (Fclk * 25) / 10000`
   - Pulse width linearly interpolates across 0..127 servo positions.
 
-Reference on servo PWM timing: `Servomotor Control with PWM and VHDL` on CodeProject (`https://www.codeproject.com/Articles/513169/Servomotor-Control-with-PWM-and-VHDL`).
+Reference on servo PWM timing: `Servomotor Control with PWM and VHDL` on [CodeProject](https://www.codeproject.com/Articles/513169/Servomotor-Control-with-PWM-and-VHDL).
 
 ### UART Telemetry
 
