@@ -22,7 +22,7 @@ This design implements a Ball-and-Beam control loop on an Spartan-6 FPGA using:
 - Echo time is captured by `counter.vhd` as number of system clock cycles while `echo=1`.
 - Distance calculation in `measurement_cal.vhd` uses:
   - `time_ns = echo_cycles * ns_per_cycle`
-  - `distance_cm ≈ time_us / 58` (round trip divided by speed of sound; design uses a constant-multiplier division scheme)
+  - `distance_cm ≈ time_us / 58` (round trip divided by speed of sound)
 - In `top_ball_beam`, `measurement_cal` generic `ns_cycel` is set to 42 (ns) for 24 MHz clock (41.666.. ns ≈ 42 ns). For other clock frequencies, set `ns_cycel = round(1e9 / Fclk)`.
 
 References for HC-SR04 math: `distance_cm = pulse_width_us / 58`.
