@@ -1,0 +1,13 @@
+ --> BallBeamCore_pac
+bb_core/BallBeamCore/cmd_regs --> cmd_regs
+bb_core/BallBeamCore/hcsr04_if --> hcsr04_if
+bb_core/BallBeamCore/io_sync --> io_sync
+bb_core/BallBeamCore/pid_ctrl --> pid_ctrl
+bb_core/BallBeamCore/pos_filter --> pos_filter
+bb_core/BallBeamCore/servo_pwm --> servo_pwm
+bb_core/BallBeamCore/status_leds --> status_leds
+bb_core/BallBeamCore/telemetry --> telemetry
+bb_core/BallBeamCore/timebase --> timebase
+bb_core/BallBeamCore/uart_rx --> uart_rx
+bb_core/BallBeamCore/uart_tx --> uart_tx
+bb_core/BallBeamCore --> BallBeamCore

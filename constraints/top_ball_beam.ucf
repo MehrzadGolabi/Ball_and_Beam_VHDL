@@ -1,0 +1,28 @@
+# Ball & Beam on Posedge-One (XC6SLX9-2TQG144), derived from PosedgeOne.ucf
+# Device: xc6slx9-2tqg144   Top: top_ball_beam (rtl/top_ball_beam.vhd)
+
+NET "CLOCK"   LOC = P50  | IOSTANDARD = LVCMOS33;        # 24 MHz oscillator
+NET "CLOCK"   TNM_NET = "clk24";
+TIMESPEC "TS_clk24" = PERIOD "clk24" 41.667 ns HIGH 50 %;
+
+NET "RESET_N" LOC = P133 | IOSTANDARD = LVCMOS33 | PULLUP;   # USER_PB, active LOW
+
+# USB-UART (FT2232H channel B async serial)
+NET "UART_TX" LOC = P104 | IOSTANDARD = LVCMOS33;        # FPGA -> PC  (FT_D1 / RXD)
+NET "UART_RX" LOC = P105 | IOSTANDARD = LVCMOS33 | PULLUP;  # PC -> FPGA (FT_D0 / TXD)
+
+# Wing W2 (same physical pins as the original design)
+# HC-SR04 ECHO is a 5 V output. Spartan-6 I/O is 3.3 V max: use a divider
+# (e.g. 1k series + 2k to GND) or a level shifter on this pin.
+NET "HCSR04_ECHO" LOC = P117 | IOSTANDARD = LVCMOS33 | PULLDOWN;  # W2_A06
+NET "HCSR04_TRIG" LOC = P118 | IOSTANDARD = LVCMOS33;             # W2_A07
+NET "SERVO"       LOC = P119 | IOSTANDARD = LVCMOS33;             # W2_A08
+
+# Status LEDs: on the LogiX1 megawing these are LED3..LED0 (W2_A13..A16).
+# Without the megawing they are plain GPIO; comment them out if those pins are used.
+NET "LEDS<3>" LOC = P126 | IOSTANDARD = LVCMOS33;   # heartbeat
+NET "LEDS<2>" LOC = P127 | IOSTANDARD = LVCMOS33;   # sensor fault
+NET "LEDS<1>" LOC = P131 | IOSTANDARD = LVCMOS33;   # |error| <= 10 mm
+NET "LEDS<0>" LOC = P132 | IOSTANDARD = LVCMOS33;   # sample flash
+
+NET "USER_LED" LOC = P88 | IOSTANDARD = LVCMOS33;   # on-board LED (board rev >= 1.3)

@@ -1,3 +1,27 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/settings.json
+# MATLAB / Simulink build products
+simulink/slprj/
+simulink/*.slxc
+simulink/*.autosave
+simulink/bb_core.slx.r*
+*.asv
+# HDL Coder reports / caches (VHDL sources are committed)
+hdl/bb_core/html/
+hdl/bb_core/_htmllib/
+hdl/bb_core/hcv/
+hdl/bb_core/*.mat
+hdl/bb_core/gm_bb_core.slx
+hdl/bb_core/*.dat
+# GHDL work dir and sim outputs
+build/
+__pycache__/
+build_genhdl.log
+simscape/slprj/
+simscape/*.slxc
+simscape/*.log
+*.slxc
+simscape/*_BIN.txt
+cad/asm_stl/*.log
+cad/freecad/*.FCBak

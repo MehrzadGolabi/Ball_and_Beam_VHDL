@@ -1,0 +1,16 @@
+vlib work
+vcom  BallBeamCore_pac.vhd
+vcom  cmd_regs.vhd
+vcom  hcsr04_if.vhd
+vcom  io_sync.vhd
+vcom  pid_ctrl.vhd
+vcom  pos_filter.vhd
+vcom  servo_pwm.vhd
+vcom  status_leds.vhd
+vcom  telemetry.vhd
+vcom  timebase.vhd
+vcom  uart_rx.vhd
+vcom  uart_tx.vhd
+vcom  BallBeamCore.vhd
+vcom  BallBeamCore_tb_pac.vhd
+vcom  BallBeamCore_tb.vhd
