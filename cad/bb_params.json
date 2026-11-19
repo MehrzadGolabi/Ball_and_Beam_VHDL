@@ -1,0 +1,53 @@
+{
+  "ball_d": 40,
+  "rail_d": 6,
+  "rail_len": 560,
+  "rail_spacing": 24,
+  "rail_z": 12,
+  "ball_zc": 31.621416870348583,
+  "beam_len": 560,
+  "cradle_w": 36,
+  "cradle_h": 10,
+  "cradle_z": 3,
+  "axle_d": 5,
+  "bearing_od": 16,
+  "bearing_w": 5,
+  "pivot_h": 130,
+  "tower_gap": 60,
+  "tower_w": 12,
+  "tower_d": 40,
+  "sensor_x_face": -270,
+  "hcsr04_board": [
+    45,
+    20
+  ],
+  "hcsr04_can_d": 16,
+  "hcsr04_can_h": 12,
+  "hcsr04_can_pitch": 26,
+  "endstop_x": 276,
+  "track_s_min": 40,
+  "track_s_max": 522,
+  "link_attach_x": 250,
+  "link_attach_z": -15,
+  "link_y": 30,
+  "horn_r": 34,
+  "servo_x": 284.00000000000006,
+  "servo_z": 45,
+  "rod_len": 70,
+  "mg996r_body": [
+    40.7,
+    19.7,
+    42.9
+  ],
+  "mg996r_ear_span": 54,
+  "mg996r_hole_pitch": [
+    49.5,
+    10
+  ],
+  "base_size": [
+    640,
+    160,
+    6
+  ],
+  "lever_ratio": 0.136
+}
