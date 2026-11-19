@@ -1,0 +1,6 @@
+defaults           off330  +9.2  off250  +3.4  after-push  +0.4  overshoot 29.7/ 0.7 mm  IAE   369  tau-sat 1.8%
+KI=8               off330 +12.1  off250  -3.1  after-push  -3.6  overshoot 65.5/14.2 mm  IAE   477  tau-sat 1.9%
+KI=13              off330  +4.2  off250  -2.9  after-push  -1.9  overshoot 89.2/27.0 mm  IAE   490  tau-sat 2.0%
+KI=8 ILIM=60       off330  +4.5  off250  -4.1  after-push  -3.8  overshoot 40.2/17.1 mm  IAE   397  tau-sat 2.0%
+KI=13 ILIM=60      off330  +1.0  off250  -2.0  after-push  -1.8  overshoot 40.1/24.3 mm  IAE   379  tau-sat 2.0%
+KI=26 ILIM=60      off330  +0.5  off250  +1.4  after-push  +1.9  overshoot 39.9/24.3 mm  IAE   362  tau-sat 2.1%
